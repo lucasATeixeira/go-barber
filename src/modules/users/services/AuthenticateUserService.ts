@@ -2,9 +2,11 @@ import { getRepository } from 'typeorm';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 
-import authConfig from '../../config/auth';
+import authConfig from '@config/auth';
 
-import User from '../models/User';
+import AppError from '@shared/errors/AppError';
+
+import User from '../infra/typeorm/entities/User';
 
 interface RequestDTO {
   email: string;
@@ -25,13 +27,13 @@ export default class AuthenticateUserService {
     });
 
     if (!user) {
-      throw Error('Incorrect Email/Password combination');
+      throw new AppError('Incorrect Email/Password combination', 401);
     }
 
     const passowrdMatched = await compare(password, user.password);
 
     if (!passowrdMatched) {
-      throw Error('Incorrect Email/Password combination');
+      throw new AppError('Incorrect Email/Password combination', 401);
     }
 
     const { expiresIn, secret } = authConfig.jwt;
