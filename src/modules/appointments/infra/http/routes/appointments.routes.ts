@@ -9,17 +9,17 @@ import CreateAppointmentService from '@modules/appointments/services/CreateAppoi
 
 const appointmentsRouter = Router();
 
-const appointmentsRepository = new AppointmentsRepository();
-
 appointmentsRouter.use(ensureAuthenticated);
 
-appointmentsRouter.get('/', async (request, response) => {
-  const appointments = await appointmentsRepository.find();
+// appointmentsRouter.get('/', async (request, response) => {
+//   const appointmentsRepository = new AppointmentsRepository();
+//   const appointments = await appointmentsRepository.find();
 
-  return response.json(appointments);
-});
+//   return response.json(appointments);
+// });
 
 appointmentsRouter.post('/', async (request, response) => {
+  const appointmentsRepository = new AppointmentsRepository();
   const { provider_id, date } = request.body;
 
   const parsedDate = parseISO(date);

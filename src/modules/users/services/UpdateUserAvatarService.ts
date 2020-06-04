@@ -1,22 +1,23 @@
 import path from 'path';
 import fs from 'fs';
-import { getRepository } from 'typeorm';
 
 import uploadConfig from '@config/upload';
 
 import AppError from '@shared/errors/AppError';
 import User from '../infra/typeorm/entities/User';
 
-interface RequestDTO {
+import IUserRepository from '../repositories/IUsersRepository';
+
+interface IRequest {
   user_id: string;
   avatarFilename: string;
 }
 
 export default class UpdateUserAvatarService {
-  public async execute({ user_id, avatarFilename }: RequestDTO): Promise<User> {
-    const usersRepository = getRepository(User);
+  constructor(private usersRepository: IUserRepository) {}
 
-    const user = await usersRepository.findOne(user_id);
+  public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
       throw new AppError('User not found', 401);
@@ -34,7 +35,7 @@ export default class UpdateUserAvatarService {
 
     user.avatar = avatarFilename;
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     return user;
   }
